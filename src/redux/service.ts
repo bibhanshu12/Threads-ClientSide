@@ -57,8 +57,8 @@ export const serviceApi = createApi({
         url: `user/${id}`,
         method: "GET",
       }),
-      providesTags: (results, error, { id }) => [{ type: "User", id }],
-      async onQueryStarted(params, { dispatch, queryFulfilled }) {
+      providesTags: ( { id }) => [{ type: "User", id }],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
           dispatch(addUser(data));
@@ -80,7 +80,7 @@ export const serviceApi = createApi({
             url: `user/follow/${id}`,
             method:"PUT"
         }),
-        invalidatesTags:(result,error,{id})=>[{
+        invalidatesTags:({id})=>[{
             type:"User",id
         }],
      }), 
@@ -114,7 +114,7 @@ export const serviceApi = createApi({
             body:data,
         }),
         invalidatesTags:["Posts"],
-        async onQueryStarted(params,{dispatch,queryFulfilled}){
+        async onQueryStarted(_,{dispatch,queryFulfilled}){
 
             try{
 
@@ -142,7 +142,7 @@ export const serviceApi = createApi({
           { type: "Posts", id: "LIST" }
         ];
       },
-      async onQueryStarted(params, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
           
@@ -160,7 +160,7 @@ export const serviceApi = createApi({
             url:`post/delete/${id}`,
             method:'DELETE',
         }),
-        async onQueryStarted(params,{dispatch,queryFulfilled}){
+        async onQueryStarted(_,{dispatch,queryFulfilled}){
             try{
                 const {data}=await queryFulfilled;
                 dispatch(deleteThePost(data))
@@ -178,7 +178,7 @@ export const serviceApi = createApi({
             url:`post/like/${id}`,
             method:"PUT"
         }),
-        invalidatesTags:(result,error,{id})=>[{
+        invalidatesTags:({id})=>[{
             type:"Posts",
             id
         }],
@@ -189,7 +189,7 @@ export const serviceApi = createApi({
             url:`post/${id}`,
             method:"GET"
         }),
-        providesTags:(result,error,{id})=>[{
+        providesTags:({id})=>[{
             type:"Posts",
             id
         }]
@@ -210,7 +210,7 @@ export const serviceApi = createApi({
           method: "POST",  // Make sure it's using POST, not GET
           body: { content }
       }),
-      invalidatesTags: (result, error, { id }) => [{
+      invalidatesTags: ( { id }) => [{
           type: "Posts",
           id
       }]
@@ -220,7 +220,7 @@ export const serviceApi = createApi({
             url:`comment/${postId}/${id}`,
             method:"DELETE"
         }),
-        invalidatesTags:(result,error,{postId})=>[{
+        invalidatesTags:({postId})=>[{
             type:"Posts",
             postId
         }],
