@@ -1,0 +1,70 @@
+*{
+
+    margin:0%;
+    padding: 0%;
+}
+
+
+.login-link{
+
+   
+    span{
+    color: rgb(87, 87, 255);
+    text-decoration: underline;
+    cursor: pointer;
+    }
+
+}
+
+.images {
+    max-width: 350px; 
+    width: 100%; 
+    height: auto; 
+}
+/* For screens below 300px */
+@media (max-width: 300px) {
+    .images {
+        max-width: 250px; /* Reduce max-width for smaller screens */
+    }
+}
+
+.link {
+    text-decoration: none;
+    color: gray;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.link:active {
+    transform: scale(0.9); /* Pop-in effect */
+    background-color: rgba(255, 255, 255, 0.3); /* Slight white highlight */
+    border-radius: 5px; /* Optional: Smooth rounded effect */
+}
+
+.image-icon{
+    cursor:pointer
+
+}
+.text1{
+    border: none;
+    outline: none;
+    padding: 0px 10px;
+    position: relative;
+    left: -10px;
+    color: black;
+    font-size: 1rem;
+    margin-bottom:5px;
+}
+.file-input{
+    display: none;
+}
+.status{
+    text-decoration: none;
+    color: rgb(27, 27, 27);
+
+}
+
+#url-img{
+    margin: 0 0 10px;
+}
+
