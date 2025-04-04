@@ -16,11 +16,12 @@ const Register = () => {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [wrongCredentials]=useState(true)
+    const [wrongCredentials, setWrongCredentials] = useState(false); 
 
     const loginToggle = () => setLogin((prev) => !prev);
 
     const handleLogin = async () => {
+        setWrongCredentials(false); 
         await loginUser({ email, password });
     };
 
@@ -48,6 +49,7 @@ const Register = () => {
         }
 
         if (loginUserData.isSuccess) {
+            setWrongCredentials(false); 
             toast.success(loginUserData.data.msg, {
                 position: "bottom-center",
                 autoClose: 2500,
@@ -58,23 +60,23 @@ const Register = () => {
                 theme: "colored",
                 transition: Bounce,
             });
-            if(loginUserData.isError){
-
-                toast.error("Wrong Credientials", {
-                    position: "bottom-center",
-                    autoClose: 2500,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    theme: "colored",
-                    transition: Bounce,
-                  });
-                  
-                 
-            }
         }
-    }, [signupUserData.isSuccess, loginUserData.isSuccess]);
+        
+     
+        if (loginUserData.isError) {
+            setWrongCredentials(true); 
+            toast.error("Wrong Credentials", {
+                position: "bottom-center",
+                autoClose: 2500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+                transition: Bounce,
+            });
+        }
+    }, [signupUserData.isSuccess, loginUserData.isSuccess, loginUserData.isError]);
 
     return (
         <Stack
@@ -192,10 +194,11 @@ const Register = () => {
                     {login ? "Log in" : "Sign up"}
                 </Button>
 
-                {wrongCredentials? "":<Typography variant="h6" fontSize={"1.1rem"} fontWeight={"bold"} alignSelf={"center"} color={darkMode ? "white" : "black"}>
-                please check Your Gmail or password!
-                </Typography>}
-
+                {wrongCredentials && (
+                    <Typography variant="h6" fontSize={"1.1rem"} fontWeight={"bold"} alignSelf={"center"} color={"red"}>
+                        Please check your Email or Password!
+                    </Typography>
+                )}
 
                 <Typography sx={{ color: darkMode ? "white" : "black" }} alignSelf={"center"} className="login-link">
                     {login ? "New to Thread?  " : "Already have an account ?"}{" "}
