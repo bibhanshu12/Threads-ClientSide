@@ -28,7 +28,7 @@ useEffect(()=>{
   }
 
 
-},[])
+},[data])
 
   return (
     <>

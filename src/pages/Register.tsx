@@ -1,6 +1,6 @@
 import { Button, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLoginMutation, useSignupMutation } from "../redux/service";
 import { useAppSelector } from "../redux/hook";
 import { Bounce, toast } from "react-toastify";
@@ -10,29 +10,100 @@ const Register = () => {
     const { darkMode } = useAppSelector((state) => state.service);
     const [signupUser, signupUserData] = useSignupMutation();
     const [loginUser, loginUserData] = useLoginMutation();
-
+    const navigate = useNavigate();
     const [login, setLogin] = useState(false);
     const [userName, setUserName] = useState("");
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    // const [wrongCredentials]=useState(true)
+    const [wrongCredentials]=useState(true)
+    const [emailvalid,setEmailValid]=useState(false);
+    const [emailreturn,setemailReturn]=useState('');
 
     const loginToggle = () => setLogin((prev) => !prev);
 
+
+
+   
+
     const handleLogin = async () => {
-        await loginUser({ email, password });
+        try {
+            // Add validation
+            if (!email || !password) {
+                toast.error("Please enter both email and password", {
+                    position: "bottom-center",
+                    autoClose: 2500,
+                    theme: "colored",
+                    transition: Bounce,
+                });
+                return;
+            }
+            const countAt = email.split('@').length - 1;
+            if (countAt !== 1) {
+             
+             return setemailReturn(" Email must contain exactly one '@' symbol.")
+            }
+          
+            // Get the domain part after "@"
+            const parts = email.split("@");
+            if (parts.length !== 2) {
+             return setemailReturn('Invalid email format.')
+            }
+            const domain = parts[1].toLowerCase();
+          
+            // Allowed domains list (add more if needed)
+            const allowedDomains = ["gmail.com", "yahoo.com", "outlook.com"];
+          
+            // Check if the domain is in the allowed list
+            if (!allowedDomains.includes(domain)) {
+              return setemailReturn(`Email domain must be one of: ${allowedDomains.join(", ")}`);
+    
+            }
+            setEmailValid(true);
+            
+            await loginUser({ email, password }).unwrap();
+            // Login will be handled in useEffect
+        } catch (error) {
+            console.error("Login error:", error);
+        }
     };
 
     const handleSignup = async () => {
+
+        const countAt = email.split('@').length - 1;
+        if (countAt !== 1) {
+         
+         return setemailReturn(" Email must contain exactly one '@' symbol.")
+        }
+      
+        // Get the domain part after "@"
+        const parts = email.split("@");
+        if (parts.length !== 2) {
+         return setemailReturn('Invalid email format.')
+        }
+        const domain = parts[1].toLowerCase();
+      
+        // Allowed domains list (add more if needed)
+        const allowedDomains = ["gmail.com", "yahoo.com", "outlook.com"];
+      
+        // Check if the domain is in the allowed list
+        if (!allowedDomains.includes(domain)) {
+          return setemailReturn(`Email domain must be one of: ${allowedDomains.join(", ")}`);
+
+        }
+        setEmailValid(true);
+        
         await signupUser({ userName, email, password, fullName });
+        await loginUser({email,password})
         setUserName("");
         setEmail("");
         setPassword("");
         setFullName("");
+       
     };
 
     useEffect(() => {
+        // Signup success handling
         if (signupUserData.isSuccess) {
             toast.success(signupUserData.data.msg, {
                 position: "bottom-center",
@@ -44,9 +115,9 @@ const Register = () => {
                 theme: "colored",
                 transition: Bounce,
             });
-            console.log(signupUserData.data);
         }
-
+    
+        // Login success handling
         if (loginUserData.isSuccess) {
             toast.success(loginUserData.data.msg, {
                 position: "bottom-center",
@@ -58,23 +129,30 @@ const Register = () => {
                 theme: "colored",
                 transition: Bounce,
             });
-            if(loginUserData.isError){
-
-                toast.error("Wrong Credientials", {
-                    position: "bottom-center",
-                    autoClose: 2500,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    theme: "colored",
-                    transition: Bounce,
-                  });
-                  
-                 
-            }
+            
+            // Add this navigation to homepage after successful login
+            window.location.reload();
         }
-    }, [signupUserData.isSuccess, loginUserData.isSuccess]);
+        
+        // Login error handling
+        if (loginUserData.isError) {
+            toast.error("Invalid email or password", {
+                position: "bottom-center",
+                autoClose: 2500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+                transition: Bounce,
+            });
+        }
+    }, [
+        signupUserData.isSuccess, 
+        loginUserData.isSuccess, 
+        loginUserData.isError,
+        navigate
+    ]);
 
     return (
         <Stack
@@ -175,27 +253,30 @@ const Register = () => {
                     }}
                 />
 
-                <Button
-                    variant="contained"
-                    size="large"
-                    onClick={login ? handleLogin : handleSignup}
-                    sx={{
-                        width: "90%",
-                        maxWidth: "370px",
-                        borderRadius: "10px",
-                        fontSize: "20px",
-                        backgroundColor: darkMode? "white":"black",
-                        color: darkMode ? "gray" : "gray",
-                        fontWeight: "bold",
-                    }}
-                >
-                    {login ? "Log in" : "Sign up"}
-                </Button>
-
-                {/* {wrongCredentials? "":<Typography variant="h6" fontSize={"1.1rem"} fontWeight={"bold"} alignSelf={"center"} color={"red"}>
+<Button
+    variant="contained"
+    size="large"
+    disabled={login ? loginUserData.isLoading : signupUserData.isLoading}
+    onClick={login ? handleLogin : handleSignup}
+    sx={{
+        width: "90%",
+        maxWidth: "370px",
+        borderRadius: "10px",
+        fontSize: "20px",
+        backgroundColor: darkMode ? "white" : "black",
+        color: darkMode ? "gray" : "gray",
+        fontWeight: "bold",
+    }}
+>
+    {login ? (loginUserData.isLoading ? "Logging in..." : "Log in") : 
+           (signupUserData.isLoading ? "Signing up..." : "Sign up")}
+</Button>
+                {wrongCredentials? "":<Typography variant="h6" fontSize={"1.1rem"} fontWeight={"bold"} alignSelf={"center"} color={"red"}>
                 please check your Gmail or Password!
-                </Typography>} */}
-
+                </Typography>}
+                <Typography variant="h6" fontSize={"0.8rem"} justifyContent={"center"} alignItems={"center"} alignSelf={"center"} color={"red"}>
+                    {emailvalid? "":emailreturn}
+                </Typography>
 
                 <Typography sx={{ color: darkMode ? "white" : "black" }} alignSelf={"center"} className="login-link">
                     {login ? "New to Thread?  " : "Already have an account ?"}{" "}

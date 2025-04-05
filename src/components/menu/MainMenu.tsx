@@ -14,6 +14,16 @@ const MainMenu = () => {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
 
+
+
+    function clearAllCookies() {
+        const cookies = document.cookie.split("; ");
+        for (const cookie of cookies) {
+          const [name] = cookie.split("=");
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        }
+      }
+
     useEffect(() => {
         if (menuOpen && menuAnchorId) {
             const element = document.getElementById(menuAnchorId);
@@ -25,9 +35,9 @@ const MainMenu = () => {
     }, [menuOpen, menuAnchorId]);
 
 
-    useEffect(() => {
+    useEffect(()=> {
         if(logoutmeData.isSuccess){
-          dispatch(addMyInfo(null));
+localStorage.removeItem('token'); 
           window.location.reload();
            toast.success(logoutmeData.data.msg,{
                   position:'bottom-center',
@@ -56,7 +66,25 @@ const MainMenu = () => {
     const handleLogout = async() => {
         // Your logout logic
         handleClose();
-        await logoutMe(undefined);
+        try {
+           
+            console.log("Attempting logout...");
+            
+           
+            const result = await logoutMe(undefined).unwrap();
+            console.log("Logout API response:", result);
+            clearAllCookies();
+            dispatch(addMyInfo(null));
+            
+            // if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            //     navigator.serviceWorker.controller.postMessage({
+            //       type: 'LOGOUT'
+            //     });
+            //   }
+            // dispatch(serviceApi.util.resetApiState());
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
 
     };
 

@@ -17,11 +17,11 @@ import { useEffect } from 'react';
 
 function App() {
   // You might want to check isLoading as well.
-  const {isLoading } = useMyInfoQuery(undefined);
+  const { isLoading } = useMyInfoQuery(undefined);
 
   const {myInfo,darkMode}=useAppSelector((state)=>state.service)
   
-
+// console.log(myInfo);
 
 
 
