@@ -75,13 +75,7 @@ localStorage.removeItem('token');
             console.log("Logout API response:", result);
             clearAllCookies();
             dispatch(addMyInfo(null));
-            
-            // if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-            //     navigator.serviceWorker.controller.postMessage({
-            //       type: 'LOGOUT'
-            //     });
-            //   }
-            // dispatch(serviceApi.util.resetApiState());
+        
         } catch (error) {
             console.error("Logout failed:", error);
         }

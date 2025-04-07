@@ -130,8 +130,9 @@ const Register = () => {
                 transition: Bounce,
             });
             
-            // Add this navigation to homepage after successful login
-            window.location.reload();
+           
+            // window.location.reload();
+            navigate('/');
         }
         
         // Login error handling

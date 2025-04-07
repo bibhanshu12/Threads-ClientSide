@@ -4,7 +4,7 @@ import { addAllPost, addMyInfo, addSingle, addUser, deleteThePost } from "./serv
 interface argstype{
   _id:string;
 }
-
+// https://server-threadbackend-production.up.railway.app/api
 export const serviceApi = createApi({
   reducerPath: "serviceApi",
   baseQuery: fetchBaseQuery({
